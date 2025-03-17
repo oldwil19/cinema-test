@@ -9,14 +9,7 @@ class Showtime extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'movie_id',
-        'movie_title',
-        'auditorium_id',
-        'start_time',
-        'available_seats',
-        'reserved_seats'
-    ];
+    protected $fillable = ['movie_id', 'movie_title', 'auditorium_id', 'start_time', 'available_seats', 'reserved_seats'];
 
     protected $casts = [
         'available_seats' => 'array',
@@ -25,6 +18,6 @@ class Showtime extends Model
 
     public function auditorium()
     {
-        return $this->belongsTo(Auditorium::class);
+        return $this->belongsTo(Auditorium::class, 'auditorium_id');
     }
 }

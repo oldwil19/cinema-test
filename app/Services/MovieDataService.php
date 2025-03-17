@@ -21,41 +21,45 @@ class MovieDataService
     }
 
     /**
-     * get movies details 
+     * Retrieves movie details from cache or API.
      */
     public function getMovieDetails(string $title): array
     {
         $cacheKey = "movie:$title";
-    
-        // check if the movie exist in redis
+
+        // Check if the movie exists in cache
         if ($this->cacheService->has($cacheKey)) {
             $movieData = $this->cacheService->get($cacheKey);
             $movieData['source'] = 'cache';
+            Log::info("Movie retrieved from cache", ['title' => $title]);
             return $movieData;
         }
-    
-        // check request limit to OMDB API
+
+        // Check API rate limit
         if (!$this->rateLimitService->canMakeRequest()) {
-            Log::warning("Se alcanzó el límite de requests a OMDb API.");
-            return ['error' => 'Límite de requests a OMDb alcanzado', 'status' => 429];
+            Log::warning("OMDb API request limit reached.");
+            return ['error' => 'OMDb request limit exceeded', 'status' => 429];
         }
-    
-        // feth from api
+
+        // Fetch movie data from API
         $movieData = $this->movieApi->getMovieDetails($title);
-    
-        // any error 
+
+        // Handle API errors
         if (isset($movieData['error'])) {
+            Log::error("Error fetching movie from OMDb API", ['title' => $title, 'error' => $movieData['error']]);
             return $movieData;
         }
-    
-        // save in cache
+
+        // Store result in cache
+        //$cacheDuration = config('services.cache_time_movie', 86400);
+        $cacheDuration =  86400;
         $movieData['source'] = 'api';
-        //$this->cacheService->put($cacheKey, $movieData, config('services.cache_time_movie', 86400));
-        $this->cacheService->put($cacheKey, $movieData,  86400);
-    
-        // discount quota available to OMDB
+        $this->cacheService->put($cacheKey, $movieData, $cacheDuration);
+
+        // Increment API request count
         $this->rateLimitService->incrementRequestCount();
-        Log::info("Respuesta de OMDb", ['data' => json_encode($movieData)]);
+        Log::info("Movie retrieved from OMDb API", ['title' => $title, 'data' => $movieData]);
+
         return $movieData;
     }
 }

@@ -19,29 +19,51 @@ class ShowtimeService
         $this->movieDataService = $movieDataService;
     }
 
+    /**
+     * Get all showtimes.
+     *
+     * @return mixed
+     */
     public function getAllShowtimes()
     {
-        return $this->showtimeRepository->getAllShowtimes();
+        return $this->showtimeRepository->getAllShowtimes()->map(function ($showtime) {
+            return [
+                'id' => $showtime->id,
+                'movie_id' => $showtime->movie_id,
+                'movie_title' => $showtime->movie_title,
+                'auditorium_id' => $showtime->auditorium_id,
+                'start_time' => $showtime->start_time,
+                'available_seats' => $this->decodeSeats($showtime->available_seats),
+                'reserved_seats' => $this->decodeSeats($showtime->reserved_seats),
+            ];
+        });
     }
 
+    /**
+     * Create a new showtime.
+     *
+     * @param array $data
+     * @return mixed
+     * @throws Exception
+     */
     public function createShowtime(array $data)
     {
-        Log::info("ShowtimeService@createShowtime iniciado", ['data' => $data]);
+        Log::info("Creating showtime", ['data' => $data]);
 
         $movieData = $this->movieDataService->getMovieDetails($data['movie_title']);
 
         if (isset($movieData['error'])) {
-            Log::error("Película no encontrada en OMDb", ['movie_title' => $data['movie_title']]);
+            Log::error("Movie not found in external API", ['movie_title' => $data['movie_title']]);
             throw new Exception($movieData['error'], $movieData['status'] ?? 500);
         }
 
-        $durationString = $movieData['Runtime'] ?? "120 min"; // Valor por defecto si no existe
+        $durationString = $movieData['Runtime'] ?? "120 min"; // Default value if runtime is missing
         if ($this->showtimeRepository->findShowtime($data['auditorium_id'], $data['start_time'], $durationString)) {
-            Log::warning("Showtime duplicado detectado", [
+            Log::warning("Duplicated showtime detected", [
                 'auditorium_id' => $data['auditorium_id'],
                 'start_time' => $data['start_time']
             ]);
-            throw new Exception("Este horario ya está ocupado en este auditorium.", 422);
+            throw new Exception("This schedule is already occupied in this auditorium.", 422);
         }
 
         return $this->showtimeRepository->createShowtime([
@@ -49,20 +71,63 @@ class ShowtimeService
             'movie_title' =>  $movieData['Title'],
             'auditorium_id' => $data['auditorium_id'],
             'start_time' => $data['start_time'],
-            'available_seats' => Auditorium::findOrFail($data['auditorium_id'])->seats,
-            'reserved_seats' => [],
+            'available_seats' => json_encode($this->getAuditoriumSeats($data['auditorium_id'])),
+            'reserved_seats' => json_encode([]),
         ]);
     }
 
-
+    /**
+     * Get showtime by ID.
+     *
+     * @param int $id
+     * @return mixed
+     * @throws Exception
+     */
     public function getShow(int $id)
     {
         $showtime = $this->showtimeRepository->findById($id);
 
         if (!$showtime) {
-            throw new Exception("Showtime no encontrado", 404);
+            throw new Exception("Showtime not found", 404);
         }
 
-        return $showtime;
+        return [
+            'id' => $showtime->id,
+            'movie_id' => $showtime->movie_id,
+            'movie_title' => $showtime->movie_title,
+            'auditorium_id' => $showtime->auditorium_id,
+            'start_time' => $showtime->start_time,
+            'available_seats' => $this->decodeSeats($showtime->available_seats),
+            'reserved_seats' => $this->decodeSeats($showtime->reserved_seats),
+        ];
+    }
+
+    /**
+     * Get all seats available in an auditorium.
+     *
+     * @param int $auditoriumId
+     * @return array
+     * @throws Exception
+     */
+    private function getAuditoriumSeats(int $auditoriumId): array
+    {
+        $auditorium = Auditorium::find($auditoriumId);
+
+        if (!$auditorium) {
+            throw new Exception("Auditorium not found", 404);
+        }
+
+        return $auditorium->seats ?? [];
+    }
+
+    /**
+     * Decode seats only if needed.
+     *
+     * @param mixed $seats
+     * @return array
+     */
+    private function decodeSeats($seats): array
+    {
+        return is_string($seats) ? json_decode($seats, true) : (is_array($seats) ? $seats : []);
     }
 }

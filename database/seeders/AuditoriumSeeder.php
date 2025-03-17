@@ -9,29 +9,28 @@ class AuditoriumSeeder extends Seeder
 {
     public function run()
     {
-        //any?
         if (Auditorium::count() > 0) {
             return;
         }
 
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             Auditorium::create([
                 'name' => "Auditorium $i",
-                'seats' => json_encode($this->generateSeats()),
+                'seats' => $this->generateSeats(), // Se guarda como array real
                 'status' => 'active',
-                'opening_time' => '00:00:00',
-                'closing_time' => '23:59:59',
+                'opening_time' => '10:00:00',
+                'closing_time' => '01:00:00',
             ]);
         }
     }
 
-    private function generateSeats()
+    private function generateSeats(): array
     {
         $rows = range('A', 'H'); // 8 filas (A-H)
         $seats = [];
 
         foreach ($rows as $row) {
-            for ($num = 1; $num <= 25; $num++) { // 25 asientos por fila
+            for ($num = 1; $num <= 15; $num++) { // 15 asientos por fila
                 $seats[] = "$row$num";
             }
         }

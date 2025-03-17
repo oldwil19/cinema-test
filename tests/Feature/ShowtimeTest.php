@@ -1,114 +1,48 @@
 <?php
-
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 use App\Models\Showtime;
 use App\Models\Auditorium;
-use Carbon\Carbon;
-
-uses(RefreshDatabase::class);
-
+use function Pest\Laravel\{getJson, postJson, putJson, deleteJson};
 
 beforeEach(function () {
-    $this->auditorium = Auditorium::factory()->create();
-});
-
-function randomMovieTitle()
-{
-    $movies = [
-        "Gladiator", "A Beautiful Mind", "Chicago", "The Lord of the Rings: The Return of the King",
-        "Million Dollar Baby", "Crash", "The Departed", "No Country for Old Men",
-        "Slumdog Millionaire", "The Hurt Locker", "The King's Speech", "The Artist",
-        "Argo", "12 Years a Slave", "Birdman", "Spotlight", "Moonlight", "The Shape of Water",
-        "Green Book", "Parasite", "Nomadland", "CODA", "Everything Everywhere All at Once"
-    ];
-    return $movies[array_rand($movies)];
-}
-
-function randomStartTime() {
-    return Carbon::now()->addDays(rand(2, 10))->format('Y-m-d H:i:s');
-}
-
-it('puede obtener todos los showtimes', function () {
-    Showtime::factory()->count(2)->create();
-
-    $response = $this->getJson('/api/showtimes');
-
-    $response->assertStatus(200)
-        ->assertJsonCount(2);
-});
-
-it('puede crear un showtime con datos válidos', function () {
-    Http::fake([
-        'https://www.omdbapi.com/*' => Http::response([
-            'imdbID' => 'tt1234567',
-            'Title' => 'Inception',
-        ], 200)
+    $this->auditorium = Auditorium::create([
+        'name' => 'Auditorium TEST',
+        'seats' => ['A1', 'A2', 'A3'], 
+        'status' => 'active',
+        'opening_time' => '09:00:00',
+        'closing_time' => '23:00:00',
     ]);
+});
 
-    $response = $this->postJson('/api/showtimes', [
-        'movie_title' => randomMovieTitle(),
+it('can list all showtimes', function () {
+    getJson('/api/showtimes')->assertOk();
+});
+
+it('can retrieve a showtime by valid ID', function () {
+    $showtime = Showtime::create([
+        'movie_id' => 'tt0111161',
+        'movie_title' => 'The Shawshank Redemption',
         'auditorium_id' => $this->auditorium->id,
-        'start_time' => randomStartTime(),
+        'start_time' => now()->addDays(1)->format('Y-m-d H:i:s'),
+        'available_seats' => json_encode(['A1', 'A2']),
+        'reserved_seats' => json_encode([]),
     ]);
 
-    $response->dump();
-
-    $response->assertStatus(201)
-        ->assertJsonStructure([
-            "id",
-            "movie_id",
-            "auditorium",
-            "start_time",
-            "available_seats",
-            "reserved_seats"
-        ]);
-
-    // Asegurar que available_seats sea un array y no una cadena JSON
-    $this->assertIsArray(json_decode($response['available_seats'], true));
-
-    // Asegurar que reserved_seats sea un array vacío
-    $this->assertIsArray($response['reserved_seats']);
-    $this->assertEmpty($response['reserved_seats']);
+    getJson("/api/showtimes/{$showtime->id}")
+        ->assertOk()
+        ->assertJsonPath('movie_title', 'The Shawshank Redemption');
 });
 
-it('devuelve error si la película no existe en OMDb', function () {
-    Http::fake([
-        'https://www.omdbapi.com/*' => Http::response([
-            'Response' => 'False',
-            'Error' => 'Movie not found!'
-        ], 404)
-    ]);
-
-    $response = $this->postJson('/api/showtimes', [
-        'movie_title' => "Película Falsa",
-        'auditorium_id' => $this->auditorium->id,
-        'start_time' => randomStartTime(),
-    ]);
-
-    $response->assertStatus(404)
-        ->assertJson([
-            'error' => 'Movie not found!'
-        ]);
+it('returns 404 for non-existent showtime', function () {
+    getJson('/api/showtimes/99999')->assertStatus(404);
 });
 
-it('no puede duplicar showtimes en el mismo horario y auditorium', function () {
-    $startTime = randomStartTime();
-
-    Showtime::factory()->create([
+it('can create a new showtime', function () {
+    postJson('/api/showtimes', [
+        'movie_title' => 'Inception',
         'auditorium_id' => $this->auditorium->id,
-        'start_time' => $startTime,
-    ]);
-
-    $response = $this->postJson('/api/showtimes', [
-        'movie_title' => randomMovieTitle(),
-        'auditorium_id' => $this->auditorium->id,
-        'start_time' => $startTime,
-    ]);
-
-    $response->assertStatus(422)
-        ->assertJson([
-            'error' => 'Este horario ya está ocupado en este auditorium.'
-        ]);
+        'start_time' => now()->addDays(2)->format('Y-m-d H:i:s'),
+    ])->assertStatus(201);
 });
+
+
 

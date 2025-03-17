@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Services\ShowtimeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class ShowtimeController extends Controller
 {
@@ -16,44 +18,63 @@ class ShowtimeController extends Controller
         $this->showtimeService = $showtimeService;
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         return response()->json($this->showtimeService->getAllShowtimes());
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         try {
             $validatedData = $request->validate([
                 'movie_title' => 'required|string',
                 'auditorium_id' => 'required|exists:auditoriums,id',
-                'start_time' => 'required|date_format:Y-m-d H:i:s',
+              'start_time' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
             ]);
 
-            Log::info("ShowtimeController@store llamado", ['request' => $validatedData]);
-
             $showtime = $this->showtimeService->createShowtime($validatedData);
-
-            return response()->json([
-                "id" => $showtime->id,
-                "movie_id" => $showtime->movie_id,
-                "auditorium" => $showtime->auditorium->name,
-                "start_time" => $showtime->start_time,
-                "available_seats" => $showtime->available_seats,
-                "reserved_seats" => [],
-            ], 201);
+            return response()->json($showtime, 201);
         } catch (Exception $e) {
-            Log::error("Error en ShowtimeController@store", ['error' => $e->getMessage()]);
+            return $this->handleException($e);
+        }
+    }
+
+    public function show($id): JsonResponse
+    {
+        try {
+            $validator = Validator::make(['id' => $id], [
+                'id' => 'required|integer|min:1',
+            ]);
+
+            if ($validator->fails()) {
+                throw new Exception("Invalid ID. Must be a positive integer.", 400);
+            }
+
+            $showtime = $this->showtimeService->getShow((int) $id);
+            return response()->json($showtime);
+        } catch (Exception $e) {
+            return $this->handleException($e);
+        }
+    }
+
+
+    public function update(Request $request, int $id)
+    {
+        try {
+          //  $updatedShowtime = $this->showtimeService->updateShowtime($id, $request->all());
+            //return response()->json($updatedShowtime, 200);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);
         }
     }
 
-    public function show($id)
+    public function destroy(int $id): JsonResponse
     {
-        $showtime = $this->showtimeService->getShow($id);
-        if (!$showtime) {
-            return response()->json(['error' => 'Showtime no encontrado'], 404);
+        try {
+          //  $this->showtimeService->deleteShowtime($id);
+            return response()->json(null, 204);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);
         }
-        return response()->json($showtime);
     }
 }

@@ -1,66 +1,505 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+For up the project you need to run in row folder
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+1. `composer install` run composer out of docker
+2. rename `.env.example` to `.env`
+3. `./vendor/bin/sail up -d` up docker
+4. `./vendor/bin/sail artisan migrate --seed` run migrations and seeds
+5. `sail artisan queue:work` up queue
+6. `./vendor/bin/sail artisan horizon` or ` ./vendor/bin/sail artisan horizon &`
+7. `./vendor/bin/sail test` for run test
 
-## About Laravel
+scaffolding of project
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```
+tree -I vendor
+.
+├── README.md
+├── app
+│   ├── Contracts
+│   │   ├── MovieApiInterface.php
+│   │   ├── ReservationServiceInterface.php
+│   │   └── ShowtimeInterface.php
+│   ├── Events
+│   │   └── ReservationCreated.php
+│   ├── Http
+│   │   ├── Controllers
+│   │   │   ├── AuditoriumController.php
+│   │   │   ├── Controller.php
+│   │   │   ├── MovieController.php
+│   │   │   ├── PurchaseController.php
+│   │   │   ├── ReservationController.php
+│   │   │   └── ShowtimeController.php
+│   │   └── Middleware
+│   │       └── LogExecutionTime.php
+│   ├── Jobs
+│   │   ├── ExpireReservationJob.php
+│   │   └── ProcessReservationJob.php
+│   ├── Listeners
+│   │   └── UpdateShowtimeAvailability.php
+│   ├── Models
+│   │   ├── Auditorium.php
+│   │   ├── Payment.php
+│   │   ├── Reservation.php
+│   │   ├── Showtime.php
+│   │   └── User.php
+│   ├── Providers
+│   │   ├── AppServiceProvider.php
+│   │   ├── HorizonServiceProvider.php
+│   │   └── RouteServiceProvider.php
+│   ├── Repositories
+│   │   └── ShowtimeRepository.php
+│   └── Services
+│       ├── CacheService.php
+│       ├── MovieDataService.php
+│       ├── OmdbService.php
+│       ├── PurchaseService.php
+│       ├── RateLimitService.php
+│       ├── ReservationService.php
+│       └── ShowtimeService.php
+├── artisan
+├── bootstrap
+│   ├── app.php
+│   ├── cache
+│   │   ├── packages.php
+│   │   └── services.php
+│   └── providers.php
+├── composer.json
+├── composer.lock
+├── config
+│   ├── app.php
+│   ├── auth.php
+│   ├── cache.php
+│   ├── database.php
+│   ├── filesystems.php
+│   ├── horizon.php
+│   ├── logging.php
+│   ├── mail.php
+│   ├── queue.php
+│   ├── services.php
+│   └── session.php
+├── database
+│   ├── database.sqlite
+│   ├── factories
+│   │   ├── AuditoriumFactory.php
+│   │   ├── ShowtimeFactory.php
+│   │   └── UserFactory.php
+│   ├── migrations
+│   │   ├── 0001_01_01_000000_create_users_table.php
+│   │   ├── 0001_01_01_000001_create_cache_table.php
+│   │   ├── 0001_01_01_000002_create_jobs_table.php
+│   │   ├── 2025_03_14_200810_create_auditoriums_table.php
+│   │   ├── 2025_03_14_201442_create_showtimes_table.php
+│   │   ├── 2025_03_15_032543_create_reservations_table.php
+│   │   └── 2025_03_16_072153_create_payments_table.php
+│   └── seeders
+│       ├── AuditoriumSeeder.php
+│       ├── DatabaseSeeder.php
+│       └── ShowtimeSeeder.php
+├── docker-compose.yml
+├── package.json
+├── phpunit.xml
+├── public
+│   ├── favicon.ico
+│   ├── index.php
+│   └── robots.txt
+├── resources
+│   ├── css
+│   │   └── app.css
+│   ├── js
+│   │   ├── app.js
+│   │   └── bootstrap.js
+│   └── views
+│       └── welcome.blade.php
+├── routes
+│   ├── api.php
+│   ├── console.php
+│   └── web.php
+├── storage
+│   ├── app
+│   │   ├── private
+│   │   └── public
+│   ├── framework
+│   │   ├── cache
+│   │   │   └── data
+│   │   ├── sessions
+│   │   ├── testing
+│   │   └── views
+│   │       ├── 275c7c02e2528e6029079c885e2d2418.php
+│   │       ├── 9065e79a479fcdb86f244f50aa1f572b.php
+│   │       └── dd310000961f2d208873a737c27d849a.php
+│   └── logs
+│       └── laravel.log
+├── tests
+│   ├── Feature
+│   │   ├── AuditoriumControllerTest.php
+│   │   ├── MovieControllerTest.php
+│   │   ├── PurchaseTest.php
+│   │   ├── ReservationTest.php
+│   │   └── ShowtimeTest.php
+│   ├── Pest.php
+│   ├── TestCase.php
+│   └── Unit
+└── vite.config.js
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+* **movies**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+find any movies
 
-## Learning Laravel
+`http://localhost/api/movies/?title=Guardians of the Galaxy Vol. 2`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+response
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```
+ {
+    "Title": "Guardians of the Galaxy Vol. 2",
+    "Year": "2017",
+    "Rated": "PG-13",
+    "Released": "05 May 2017",
+    "Runtime": "136 min",
+    "Genre": "Action, Adventure, Comedy",
+    "Director": "James Gunn",
+    "Writer": "James Gunn, Dan Abnett, Andy Lanning",
+    "Actors": "Chris Pratt, Zoe Saldaña, Dave Bautista",
+    "Plot": "The Guardians struggle to keep together as a team while dealing with their personal family issues, notably Star-Lord's encounter with his father, the ambitious celestial being Ego.",
+    "Language": "English",
+    "Country": "United States",
+    "Awards": "Nominated for 1 Oscar. 15 wins & 61 nominations total",
+    "Poster": "https://m.media-amazon.com/images/M/MV5BNWE5MGI3MDctMmU5Ni00YzI2LWEzMTQtZGIyZDA5MzQzNDBhXkEyXkFqcGc@._V1_SX300.jpg",
+    "Ratings": [
+        {
+            "Source": "Internet Movie Database",
+            "Value": "7.6/10"
+        },
+        {
+            "Source": "Rotten Tomatoes",
+            "Value": "85%"
+        },
+        {
+            "Source": "Metacritic",
+            "Value": "67/100"
+        }
+    ],
+    "Metascore": "67",
+    "imdbRating": "7.6",
+    "imdbVotes": "788,570",
+    "imdbID": "tt3896198",
+    "Type": "movie",
+    "DVD": "N/A",
+    "BoxOffice": "$389,813,101",
+    "Production": "N/A",
+    "Website": "N/A",
+    "Response": "True",
+    "source": "api"
+}
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**showtime**
 
-## Laravel Sponsors
+*get all showtimes*
+`curl --location 'http://localhost/api/showtimes'`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```
+[
+ 
+    {
+        "id": 4,
+        "movie_id": "tt0816692",
+        "movie_title": "Interstellar",
+        "auditorium_id": 1,
+        "start_time": "2025-03-22 11:30:30",
+        "available_seats": [
+            "A1",
+            "A2",
+            "A3",
+            "A4",
+            "A5",
+            "A6",
+            "A7",
+            "A8",
+            "A9",
+            "A10",
+            "A13",
+            "A14",
+            "A15",
+            "B1",
+            "B2",
+            "B3",
+            "B4",
+            "B5",
+            "B6",
+            "B7",
+          ..
+        ],
+        "reserved_seats": [
+            "A11",
+            "A12"
+        ]
+    },..
+]
+```
 
-### Premium Partners
+**see showtime by id**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+`http://localhost/api/showtimes/11`
 
-## Contributing
+**create a showtime**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+curl --location 'http://localhost/api/showtimes' \
+--header 'Content-Type: application/json' \
+--data '{
+    "movie_title": "Interstellar",
+    "auditorium_id": 1,
+    "start_time": "2025-03-22 11:30:30"
+}'
+```
 
-## Code of Conduct
+example of response
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
 
-## Security Vulnerabilities
+{
+    "movie_id": "tt0816692",
+    "movie_title": "Interstellar",
+    "auditorium_id": 1,
+    "start_time": "2025-03-22 11:30:30",
+    "available_seats": "[\"A1\",\"A2\",\"A3\",\"A4\",\"A5\",\"A6\",\"A7\",\"A8\",\"A9\",\"A10\",\"A11\",\"A12\",\"A13\",\"A14\",\"A15\",\"B1\",\"B2\",\"B3\",\"B4\",\"B5\",\"B6\",\"B7\",\"B8\",\"B9\",\"B10\",\"B11\",\"B12\",\"B13\",\"B14\",\"B15\",\"C1\",\"C2\",\"C3\",\"C4\",\"C5\",\"C6\",\"C7\",\"C8\",\"C9\",\"C10\",\"C11\",\"C12\",\"C13\",\"C14\",\"C15\",\"D1\",\"D2\",\"D3\",\"D4\",\"D5\",\"D6\",\"D7\",\"D8\",\"D9\",\"D10\",\"D11\",\"D12\",\"D13\",\"D14\",\"D15\",\"E1\",\"E2\",\"E3\",\"E4\",\"E5\",\"E6\",\"E7\",\"E8\",\"E9\",\"E10\",\"E11\",\"E12\",\"E13\",\"E14\",\"E15\",\"F1\",\"F2\",\"F3\",\"F4\",\"F5\",\"F6\",\"F7\",\"F8\",\"F9\",\"F10\",\"F11\",\"F12\",\"F13\",\"F14\",\"F15\",\"G1\",\"G2\",\"G3\",\"G4\",\"G5\",\"G6\",\"G7\",\"G8\",\"G9\",\"G10\",\"G11\",\"G12\",\"G13\",\"G14\",\"G15\",\"H1\",\"H2\",\"H3\",\"H4\",\"H5\",\"H6\",\"H7\",\"H8\",\"H9\",\"H10\",\"H11\",\"H12\",\"H13\",\"H14\",\"H15\"]",
+    "reserved_seats": "[]",
+    "updated_at": "2025-03-17T20:14:53.000000Z",
+    "created_at": "2025-03-17T20:14:53.000000Z",
+    "id": 4
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**get all reservations**
+`http://localhost/api/reservations`
 
-## License
+```
+[
+    {
+        "id": "64ec00e4-6220-4050-a3a1-d8223bc44147",
+        "showtime_id": 4,
+        "seats": "[\"A11\",\"A12\"]",
+        "status": "pending", //"expired" 
+        "expires_at": "2025-03-17T20:26:42.000000Z",
+        "created_at": "2025-03-17T20:16:42.000000Z",
+        "updated_at": "2025-03-17T20:16:42.000000Z"
+    }
+]
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**create a reservation**
+
+```
+
+curl --location 'http://localhost/api/reservations' \
+--header 'Content-Type: application/json' \
+--data '{
+    "showtime_id":4,
+    "seats": 
+       [ "A11","A12"]
+  
+}'
+```
+
+example of response
+
+```
+{
+    "reservation_id": "64ec00e4-6220-4050-a3a1-d8223bc44147",
+    "message": "Reservation is being processed"
+}
+```
+
+see reservation
+http://localhost/api/reservations/a5367360-4413-43f0-adb1-4e506af04faa(uuid)
+
+example of response
+
+```
+{
+    "id": "64ec00e4-6220-4050-a3a1-d8223bc44147",
+    "showtime_id": 4,
+    "seats": "[\"A11\",\"A12\"]",
+    "status": "pending",
+    "expires_at": "2025-03-17T20:26:42.000000Z",
+    "created_at": "2025-03-17T20:16:42.000000Z",
+    "updated_at": "2025-03-17T20:16:42.000000Z"
+}
+```
+
+Purchase Reservation
+
+```
+curl --location 'http://localhost/api/purchase' \
+--header 'Content-Type: application/json' \
+--data '{
+    "reservation_id": "b2e05ee3-5d5d-499c-8d7c-b45d5780d459"
+}'
+```
+
+Response example
+
+```
+{
+    "message": "Reservation successfully confirmed."
+}
+```
+
+get all Payments
+
+`http://localhost/api/payments`
+
+```
+[
+    {
+        "id": "efb3b46b-3760-4da9-b770-c4245856a91c",
+        "reservation_id": "b2e05ee3-5d5d-499c-8d7c-b45d5780d459",
+        "status": "completed",
+        "created_at": "2025-03-17T20:47:50.000000Z",
+        "updated_at": "2025-03-17T20:47:50.000000Z",
+        "reservation": {
+            "id": "b2e05ee3-5d5d-499c-8d7c-b45d5780d459",
+            "showtime_id": 4,
+            "seats": "[\"A1\",\"A2\"]",
+            "status": "confirmed",
+            "expires_at": "2025-03-17T20:57:41.000000Z",
+            "created_at": "2025-03-17T20:47:41.000000Z",
+            "updated_at": "2025-03-17T20:47:50.000000Z"
+        }
+    }
+]
+```
+
+auditorium
+
+get all auditoriums
+
+`http://localhost/api/auditoriums`
+
+```
+[
+    {
+        "id": 1,
+        "name": "Auditorium 1",
+        "seats": [
+            "A1",
+            "A2",
+            "A3",
+            "A4",
+            "A5",
+            "A6",
+            "A7",
+            "A8",
+            "A9",
+            "A10",
+            "A11",
+            "A12",
+            "A13",
+            "A14",
+            "A15",
+            "B1"
+
+        ],
+        "status": "active",
+        "opening_time": "10:00:00",
+        "closing_time": "01:00:00",
+        "created_at": "2025-03-17T20:07:38.000000Z",
+        "updated_at": "2025-03-17T20:07:38.000000Z"
+    },..
+]
+```
+
+see auditorium
+
+`http://localhost/api/auditoriums/1`
+
+```
+{
+    "id": 1,
+    "name": "Auditorium 1",
+    "seats": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10",
+        "A11",
+        "A12",
+        "A13",
+        "A14",
+        "A15",
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6",
+        "B7",
+        "B8",
+        "B9",
+        "B10",
+        "B11",
+        "B12",
+        "B13",
+        "B14",
+        "B15",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9",
+        "C10",
+        "C11",
+        "C12",
+        "C13",
+        "C14",
+        "C15",
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D13",
+        "D14",
+        "D15",
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E8",
+        "E9",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+ 
+    ],
+    "status": "active",
+    "opening_time": "10:00:00",
+    "closing_time": "01:00:00",
+    "created_at": "2025-03-17T20:07:38.000000Z",
+    "updated_at": "2025-03-17T20:07:38.000000Z"
+}
+```

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Services\ReservationService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
+use Exception;
 
 class ReservationController extends Controller
 {
@@ -14,38 +17,49 @@ class ReservationController extends Controller
         $this->reservationService = $reservationService;
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         return response()->json($this->reservationService->getAllReservation());
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $request->validate([
-            'showtime_id' => 'required|exists:showtimes,id',
-            'seats' => 'required|array|min:1',
-            'seats.*' => 'string'
-        ]);
-
         try {
+            $validatedData = $request->validate([
+                'showtime_id' => 'required|exists:showtimes,id',
+                'seats' => 'required|array|min:1',
+                'seats.*' => 'string',
+            ]);
+
             $reservationId = $this->reservationService->reserveSeats(
-                $request->input('showtime_id'),
-                $request->input('seats')
+                $validatedData['showtime_id'],
+                $validatedData['seats']
             );
 
-            return response()->json(['reservation_id' => $reservationId], 201);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json([
+                'reservation_id' => $reservationId,
+                'message' => 'Reservation is being processed'
+            ], 202);
+        } catch (Exception $e) {
+            return $this->handleException($e);
         }
     }
 
-    public function show(string $id)
+    public function show($id): JsonResponse
     {
         try {
+            $validator = Validator::make(['id' => $id], [
+                'id' => 'required|uuid',
+            ]);
+
+            if ($validator->fails()) {
+                throw new Exception("Invalid ID. Must be a valid UUID.", 400);
+            }
+
             $reservation = $this->reservationService->getReservationById($id);
             return response()->json($reservation);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        } catch (Exception $e) {
+            return $this->handleException($e);
         }
     }
 }

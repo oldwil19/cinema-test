@@ -7,6 +7,7 @@ use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ShowtimeController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\AuditoriumController;
+use App\Http\Controllers\PurchaseController;
 
 Route::prefix('showtimes')->group(function () {
     Route::get('/', [ShowtimeController::class, 'index']);
@@ -22,6 +23,7 @@ Route::prefix('movies')->group(function () {
 
 Route::prefix('auditoriums')->group(function () {
     Route::get('/', [AuditoriumController::class, 'index']);
+    Route::get('/{id}', [AuditoriumController::class, 'show']);
 });
 
 Route::prefix('reservations')->group(function () {
@@ -30,6 +32,11 @@ Route::prefix('reservations')->group(function () {
     Route::post('/', [ReservationController::class, 'store']);
     Route::post('/{id}/confirm', [ReservationController::class, 'confirm']);
 });
+
+
+
+Route::post('/purchase', [PurchaseController::class, 'confirm']);
+Route::get('/payments', [PurchaseController::class, 'index']);
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API funcionando correctamente'], 200);

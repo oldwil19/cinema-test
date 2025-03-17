@@ -12,8 +12,8 @@ return new class extends Migration {
             $table->string('name')->unique();
             $table->json('seats'); // Almacena los asientos de la sala
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->time('opening_time')->default('00:00:00'); // Horario de apertura
-            $table->time('closing_time')->default('23:59:59'); // Horario de cierre
+            $table->time('opening_time')->default('00:00:00'); 
+            $table->time('closing_time')->default('23:59:59'); 
             $table->timestamps();
         });
     }
