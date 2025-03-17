@@ -8,6 +8,20 @@ For up the project you need to run in row folder
 6. `./vendor/bin/sail artisan horizon` or ` ./vendor/bin/sail artisan horizon &`
 7. `./vendor/bin/sail test` for run test
 
+**This was the way the features or tickets were prioritized.Definition of tickets**
+
+* OMDb integration (Firts, that beacause need to get a movie for create any showtime
+* Log Middleware (just logging)
+* Cache Service with redis (to save the data of movies)
+* MovieData Service (the service to merge the OMDb integracion and cache services)
+* Auditorium (Only way to see if exist or not Auditorium, then run seeds to populate some Auditorium)
+* Showtime services (the way to create any showtime with a title of movie)
+* Reservation ( the most comples feature, actually ,the core of this app)
+* Purchase service (Just simulate a payment for some resevation)
+* Jobs(ExpireReservationJob, ProcessReservationJob) asyncronus way to register reservation, also, expire reservation by expired time for any reservation), `php artisan make:job`
+* Handle event and listener to emit event to update seats
+* For each service and controller I created test, to validate and continus to next task
+
 scaffolding of project
 
 ```
