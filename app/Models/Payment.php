@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Payment extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     protected $fillable = ['id', 'reservation_id', 'status'];
 

@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Log;
 
 class ReservationCreated implements ShouldQueue
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public Reservation $reservation;
 

@@ -16,9 +16,10 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(
-            MovieApiInterface::class, 
-            OmdbService::class, 
-            ReservationServiceInterface::class, ReservationService::class
+            MovieApiInterface::class,
+            OmdbService::class,
+            ReservationServiceInterface::class,
+            ReservationService::class
         );
     }
 

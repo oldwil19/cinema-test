@@ -131,7 +131,9 @@ class ReservationService implements ReservationServiceInterface
         sort($seats);
         $rows = array_unique(array_map(fn($s) => preg_replace('/\d+/', '', $s), $seats));
 
-        if (count($rows) > 1) return false;
+        if (count($rows) > 1) {
+            return false;
+        }
 
         $numbers = array_map(fn($s) => (int) preg_replace('/\D/', '', $s), $seats);
         sort($numbers);

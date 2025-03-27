@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Log;
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests;
+    use DispatchesJobs;
+    use ValidatesRequests;
 
     protected function handleException(Exception $e): JsonResponse
     {
