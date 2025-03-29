@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Reservation;
 use App\Models\Payment;
-use Illuminate\Support\Facades\DB;
+use App\Models\Reservation;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class PurchaseService
@@ -19,16 +19,16 @@ class PurchaseService
         try {
             $reservation = Reservation::where('id', $reservationId)->lockForUpdate()->first();
 
-            if (!$reservation) {
-                throw new Exception("Reservation not found.", 404);
+            if (! $reservation) {
+                throw new Exception('Reservation not found.', 404);
             }
 
             if ($reservation->status !== 'pending') {
-                throw new Exception("This reservation is not available for purchase.", 400);
+                throw new Exception('This reservation is not available for purchase.', 400);
             }
 
             if ($reservation->expires_at < now()) {
-                throw new Exception("This reservation has already expired.", 400);
+                throw new Exception('This reservation has already expired.', 400);
             }
 
             // Marcar reserva como confirmada

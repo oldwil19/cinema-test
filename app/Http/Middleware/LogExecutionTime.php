@@ -29,7 +29,7 @@ class LogExecutionTime
         $response = $next($request);
         $endTime = microtime(true);
 
-        Log::info("Execution time: " . ($endTime - $startTime) . " seconds for " . $path);
+        Log::info('Execution time: '.($endTime - $startTime).' seconds for '.$path);
 
         return $response;
     }

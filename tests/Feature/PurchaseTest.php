@@ -1,11 +1,11 @@
 <?php
 
+use App\Models\Auditorium;
 use App\Models\Reservation;
 use App\Models\Showtime;
-use App\Models\Auditorium;
-use function Pest\Laravel\postJson;
-use function Pest\Laravel\getJson;
 use Illuminate\Support\Str;
+
+use function Pest\Laravel\postJson;
 
 beforeEach(function () {
     $this->auditorium = Auditorium::factory()->create([
@@ -75,7 +75,7 @@ it('returns error for invalid reservation_id format', function () {
 
 it('returns error if reservation does not exist', function () {
     $response = postJson('/api/purchase', [
-        'reservation_id' => (string) Str::uuid(), 
+        'reservation_id' => (string) Str::uuid(),
     ]);
 
     $response->assertStatus(404)

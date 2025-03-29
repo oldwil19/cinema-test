@@ -1,12 +1,15 @@
 <?php
-use App\Models\Showtime;
+
 use App\Models\Auditorium;
-use function Pest\Laravel\{getJson, postJson, putJson, deleteJson};
+use App\Models\Showtime;
+
+use function Pest\Laravel\getJson;
+use function Pest\Laravel\postJson;
 
 beforeEach(function () {
     $this->auditorium = Auditorium::create([
         'name' => 'Auditorium TEST',
-        'seats' => ['A1', 'A2', 'A3'], 
+        'seats' => ['A1', 'A2', 'A3'],
         'status' => 'active',
         'opening_time' => '09:00:00',
         'closing_time' => '23:00:00',
@@ -43,6 +46,3 @@ it('can create a new showtime', function () {
         'start_time' => now()->addDays(2)->format('Y-m-d H:i:s'),
     ])->assertStatus(201);
 });
-
-
-

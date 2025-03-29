@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\ShowtimeService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\JsonResponse;
 use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ShowtimeController extends Controller
@@ -29,10 +28,11 @@ class ShowtimeController extends Controller
             $validatedData = $request->validate([
                 'movie_title' => 'required|string',
                 'auditorium_id' => 'required|exists:auditoriums,id',
-              'start_time' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
+                'start_time' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
             ]);
 
             $showtime = $this->showtimeService->createShowtime($validatedData);
+
             return response()->json($showtime, 201);
         } catch (Exception $e) {
             return $this->handleException($e);
@@ -47,22 +47,22 @@ class ShowtimeController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new Exception("Invalid ID. Must be a positive integer.", 400);
+                throw new Exception('Invalid ID. Must be a positive integer.', 400);
             }
 
             $showtime = $this->showtimeService->getShow((int) $id);
+
             return response()->json($showtime);
         } catch (Exception $e) {
             return $this->handleException($e);
         }
     }
 
-
     public function update(Request $request, int $id)
     {
         try {
-          //  $updatedShowtime = $this->showtimeService->updateShowtime($id, $request->all());
-            //return response()->json($updatedShowtime, 200);
+            //  $updatedShowtime = $this->showtimeService->updateShowtime($id, $request->all());
+            // return response()->json($updatedShowtime, 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);
         }
@@ -71,7 +71,7 @@ class ShowtimeController extends Controller
     public function destroy(int $id): JsonResponse
     {
         try {
-          //  $this->showtimeService->deleteShowtime($id);
+            //  $this->showtimeService->deleteShowtime($id);
             return response()->json(null, 204);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);

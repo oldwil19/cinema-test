@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Middleware\LogExecutionTime;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\LogExecutionTime; // 
+use Illuminate\Foundation\Configuration\Middleware; //
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(LogExecutionTime::class); //logs time execution
+        $middleware->append(LogExecutionTime::class); // logs time execution
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

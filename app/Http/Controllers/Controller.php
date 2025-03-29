@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Exception;
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class Controller extends BaseController
 {
@@ -20,7 +20,7 @@ class Controller extends BaseController
 
     protected function handleException(Exception $e): JsonResponse
     {
-        Log::error("Exception caught", ['error' => $e->getMessage()]);
+        Log::error('Exception caught', ['error' => $e->getMessage()]);
 
         return match (true) {
             $e instanceof ValidationException => response()->json(['error' => $e->errors()], 422),

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Auditorium;
+
 use function Pest\Laravel\getJson;
 
 beforeEach(function () {
@@ -17,7 +18,7 @@ test('it can list all auditoriums', function () {
     getJson('/api/auditoriums')
         ->assertOk()
         ->assertJsonStructure([
-            '*' => ['id', 'name', 'seats', 'status', 'opening_time', 'closing_time']
+            '*' => ['id', 'name', 'seats', 'status', 'opening_time', 'closing_time'],
         ]);
 });
 

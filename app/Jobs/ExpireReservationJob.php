@@ -3,14 +3,13 @@
 namespace App\Jobs;
 
 use App\Models\Reservation;
+use App\Models\Showtime;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use App\Models\Showtime;
 
 class ExpireReservationJob implements ShouldQueue
 {
@@ -53,11 +52,11 @@ class ExpireReservationJob implements ShouldQueue
 
                     $showtime->save();
                 }
-            } elseif (!$reservation) {
+            } elseif (! $reservation) {
                 Log::warning("Reservation not found: {$this->reservationId}");
             }
         } catch (\Exception $e) {
-            Log::error("Error expiring reservation {$this->reservationId}: " . $e->getMessage());
+            Log::error("Error expiring reservation {$this->reservationId}: ".$e->getMessage());
         }
     }
 }

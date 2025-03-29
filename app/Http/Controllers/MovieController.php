@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\MovieDataService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Exception;
 
 class MovieController extends Controller
 {
@@ -21,11 +21,12 @@ class MovieController extends Controller
         try {
             $title = $request->query('title');
 
-            if (!$title) {
-                throw new Exception("Movie title is required.", 400);
+            if (! $title) {
+                throw new Exception('Movie title is required.', 400);
             }
 
             $movie = $this->movieDataService->getMovieDetails($title);
+
             return response()->json($movie);
         } catch (Exception $e) {
             return $this->handleException($e);

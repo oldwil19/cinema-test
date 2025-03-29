@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Contracts\MovieApiInterface;
+use App\Contracts\ReservationServiceInterface;
 use App\Services\OmdbService;
 use App\Services\ReservationService;
-use App\Contracts\ReservationServiceInterface;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

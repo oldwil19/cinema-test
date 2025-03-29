@@ -16,6 +16,7 @@ class RateLimitService
     public function canMakeRequest(): bool
     {
         $requestsUsed = Redis::get('omdb_requests_used') ?? 0;
+
         return $requestsUsed < $this->dailyLimit;
     }
 

@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Models\Showtime;
 use App\Contracts\ShowtimeInterface;
+use App\Models\Showtime;
 use Carbon\Carbon;
 
 class ShowtimeRepository implements ShowtimeInterface
@@ -38,7 +38,7 @@ class ShowtimeRepository implements ShowtimeInterface
                 $query->whereBetween('start_time', [$startTime, $endTime]) // Showtime
                     ->orWhere(function ($query) use ($startTime, $duration) {
                         $query->where('start_time', '<', $startTime)
-                            ->whereRaw("ADDTIME(start_time, SEC_TO_TIME(? * 60)) > ?", [$duration, $startTime]);
+                            ->whereRaw('ADDTIME(start_time, SEC_TO_TIME(? * 60)) > ?', [$duration, $startTime]);
                     });
             })
             ->exists();

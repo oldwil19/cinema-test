@@ -2,18 +2,16 @@
 
 namespace App\Jobs;
 
+use App\Events\ReservationCreated;
 use App\Models\Reservation;
 use App\Models\Showtime;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use App\Events\ReservationCreated;
-use App\Jobs\ExpireReservationJob;
-use Exception;
-use Carbon\Carbon;
 
 class ProcessReservationJob implements ShouldQueue
 {
@@ -23,7 +21,9 @@ class ProcessReservationJob implements ShouldQueue
     use SerializesModels;
 
     protected string $reservationId;
+
     protected int $showtimeId;
+
     protected array $seats;
 
     public function __construct(string $reservationId, int $showtimeId, array $seats)
@@ -39,22 +39,22 @@ class ProcessReservationJob implements ShouldQueue
         try {
             $showtime = Showtime::with('auditorium')->lockForUpdate()->find($this->showtimeId);
 
-            if (!$showtime) {
-                throw new Exception("The selected showtime does not exist.", 404);
+            if (! $showtime) {
+                throw new Exception('The selected showtime does not exist.', 404);
             }
 
             if (now()->greaterThan($showtime->start_time)) {
-                throw new Exception("Cannot reserve seats for a past showtime.", 400);
+                throw new Exception('Cannot reserve seats for a past showtime.', 400);
             }
 
             $reservedSeats = Reservation::where('showtime_id', $this->showtimeId)
                 ->whereIn('status', ['pending', 'confirmed'])
                 ->get()
-                ->flatMap(fn($reservation) => json_decode($reservation->seats, true))
+                ->flatMap(fn ($reservation) => json_decode($reservation->seats, true))
                 ->toArray();
 
-            if (!empty(array_intersect($reservedSeats, $this->seats))) {
-                throw new Exception("Some seats are already reserved or purchased.", 400);
+            if (! empty(array_intersect($reservedSeats, $this->seats))) {
+                throw new Exception('Some seats are already reserved or purchased.', 400);
             }
 
             // Create reservation with the pre-generated reservation ID

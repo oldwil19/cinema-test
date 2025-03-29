@@ -1,8 +1,8 @@
 <?php
 
 use App\Services\MovieDataService;
+
 use function Pest\Laravel\getJson;
-use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
     $this->mock(MovieDataService::class, function ($mock) {
@@ -10,7 +10,7 @@ beforeEach(function () {
             'Title' => 'Interstellar',
             'Year' => '2014',
             'Director' => 'Christopher Nolan',
-            'source' => 'api'
+            'source' => 'api',
         ]);
     });
 });

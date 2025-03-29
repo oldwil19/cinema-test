@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 class OmdbService implements MovieApiInterface
 {
     private string $apiUrl;
+
     private string $apiKey;
 
     public function __construct()
@@ -27,29 +28,31 @@ class OmdbService implements MovieApiInterface
 
             $data = $response->json();
 
-            if (!isset($data['Response'])) {
+            if (! isset($data['Response'])) {
                 Log::error("Error inesperado en OMDb API al buscar '{$title}': Respuesta inválida.");
+
                 return [
                     'error' => 'Unexpected response from OMDb API',
-                    'status' => 500
+                    'status' => 500,
                 ];
             }
 
             if ($data['Response'] === 'False') {
                 Log::warning("Película no encontrada en OMDb: {$title}");
+
                 return [
                     'error' => $data['Error'] ?? 'Movie not found!',
-                    'status' => 404
+                    'status' => 404,
                 ];
             }
 
             return $data;
         } catch (\Exception $e) {
-            Log::error("Error en OMDb API al buscar '{$title}': " . $e->getMessage());
+            Log::error("Error en OMDb API al buscar '{$title}': ".$e->getMessage());
 
             return [
                 'error' => 'Error al conectar con OMDb API',
-                'status' => 500
+                'status' => 500,
             ];
         }
     }

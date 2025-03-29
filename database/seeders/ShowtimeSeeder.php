@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Showtime;
 use App\Models\Auditorium;
+use App\Models\Showtime;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class ShowtimeSeeder extends Seeder
 {

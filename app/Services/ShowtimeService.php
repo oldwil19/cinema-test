@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
-use App\Repositories\ShowtimeRepository;
 use App\Models\Auditorium;
-use App\Services\MovieDataService;
+use App\Repositories\ShowtimeRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
 class ShowtimeService
 {
     protected ShowtimeRepository $showtimeRepository;
+
     protected MovieDataService $movieDataService;
 
     public function __construct(ShowtimeRepository $showtimeRepository, MovieDataService $movieDataService)
@@ -42,33 +42,33 @@ class ShowtimeService
     /**
      * Create a new showtime.
      *
-     * @param array $data
      * @return mixed
+     *
      * @throws Exception
      */
     public function createShowtime(array $data)
     {
-        Log::info("Creating showtime", ['data' => $data]);
+        Log::info('Creating showtime', ['data' => $data]);
 
         $movieData = $this->movieDataService->getMovieDetails($data['movie_title']);
 
         if (isset($movieData['error'])) {
-            Log::error("Movie not found in external API", ['movie_title' => $data['movie_title']]);
+            Log::error('Movie not found in external API', ['movie_title' => $data['movie_title']]);
             throw new Exception($movieData['error'], $movieData['status'] ?? 500);
         }
 
-        $durationString = $movieData['Runtime'] ?? "120 min"; // Default value if runtime is missing
+        $durationString = $movieData['Runtime'] ?? '120 min'; // Default value if runtime is missing
         if ($this->showtimeRepository->findShowtime($data['auditorium_id'], $data['start_time'], $durationString)) {
-            Log::warning("Duplicated showtime detected", [
+            Log::warning('Duplicated showtime detected', [
                 'auditorium_id' => $data['auditorium_id'],
-                'start_time' => $data['start_time']
+                'start_time' => $data['start_time'],
             ]);
-            throw new Exception("This schedule is already occupied in this auditorium.", 422);
+            throw new Exception('This schedule is already occupied in this auditorium.', 422);
         }
 
         return $this->showtimeRepository->createShowtime([
             'movie_id' => $movieData['imdbID'],
-            'movie_title' =>  $movieData['Title'],
+            'movie_title' => $movieData['Title'],
             'auditorium_id' => $data['auditorium_id'],
             'start_time' => $data['start_time'],
             'available_seats' => json_encode($this->getAuditoriumSeats($data['auditorium_id'])),
@@ -79,16 +79,16 @@ class ShowtimeService
     /**
      * Get showtime by ID.
      *
-     * @param int $id
      * @return mixed
+     *
      * @throws Exception
      */
     public function getShow(int $id)
     {
         $showtime = $this->showtimeRepository->findById($id);
 
-        if (!$showtime) {
-            throw new Exception("Showtime not found", 404);
+        if (! $showtime) {
+            throw new Exception('Showtime not found', 404);
         }
 
         return [
@@ -105,16 +105,14 @@ class ShowtimeService
     /**
      * Get all seats available in an auditorium.
      *
-     * @param int $auditoriumId
-     * @return array
      * @throws Exception
      */
     private function getAuditoriumSeats(int $auditoriumId): array
     {
         $auditorium = Auditorium::find($auditoriumId);
 
-        if (!$auditorium) {
-            throw new Exception("Auditorium not found", 404);
+        if (! $auditorium) {
+            throw new Exception('Auditorium not found', 404);
         }
 
         return $auditorium->seats ?? [];
@@ -123,8 +121,7 @@ class ShowtimeService
     /**
      * Decode seats only if needed.
      *
-     * @param mixed $seats
-     * @return array
+     * @param  mixed  $seats
      */
     private function decodeSeats($seats): array
     {

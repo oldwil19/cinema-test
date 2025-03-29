@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Services\ReservationService;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
 use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ReservationController extends Controller
 {
@@ -38,7 +38,7 @@ class ReservationController extends Controller
 
             return response()->json([
                 'reservation_id' => $reservationId,
-                'message' => 'Reservation is being processed'
+                'message' => 'Reservation is being processed',
             ], 202);
         } catch (Exception $e) {
             return $this->handleException($e);
@@ -53,10 +53,11 @@ class ReservationController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new Exception("Invalid ID. Must be a valid UUID.", 400);
+                throw new Exception('Invalid ID. Must be a valid UUID.', 400);
             }
 
             $reservation = $this->reservationService->getReservationById($id);
+
             return response()->json($reservation);
         } catch (Exception $e) {
             return $this->handleException($e);

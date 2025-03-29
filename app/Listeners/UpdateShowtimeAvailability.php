@@ -37,8 +37,8 @@ class UpdateShowtimeAvailability
 
             $showtime->save();
             Log::info("Seats updated  Showtime ID: {$showtime->id}");
-            Log::info("Now this seats are available: " . json_encode($availableSeats));
-            Log::info("Reserved seats in this process" . json_encode($showtime->reserved_seats));
+            Log::info('Now this seats are available: '.json_encode($availableSeats));
+            Log::info('Reserved seats in this process'.json_encode($showtime->reserved_seats));
         }
     }
 }

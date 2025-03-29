@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuditoriumController;
+use App\Http\Controllers\MovieController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ShowtimeController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
-use App\Http\Controllers\MovieController;
-use App\Http\Controllers\ShowtimeController;
-use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\AuditoriumController;
-use App\Http\Controllers\PurchaseController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('showtimes')->group(function () {
     Route::get('/', [ShowtimeController::class, 'index']);
@@ -32,8 +32,6 @@ Route::prefix('reservations')->group(function () {
     Route::post('/', [ReservationController::class, 'store']);
     Route::post('/{id}/confirm', [ReservationController::class, 'confirm']);
 });
-
-
 
 Route::post('/purchase', [PurchaseController::class, 'confirm']);
 Route::get('/payments', [PurchaseController::class, 'index']);
@@ -60,6 +58,6 @@ Route::get('/health', function () {
     return response()->json([
         'api' => 'OK',
         'mysql' => $mysqlStatus,
-        'redis' => $redisStatus
+        'redis' => $redisStatus,
     ]);
 });

@@ -35,7 +35,6 @@ return [
         ],
     ],
 
-
     'omdb' => [
         'base_url' => env('OMDB_BASE_URL', 'https://www.omdbapi.com/'),
         'api_key' => env('OMDB_API_KEY'),
@@ -43,6 +42,6 @@ return [
         'requests_used' => env('OMDB_REQUESTS_USED', 0),
         'reset_time' => env('OMDB_RESET_TIME', '00:00'),
     ],
-    'cache_time_movie' =>[ env('CACHE_TIME_MOVIE')]
+    'cache_time_movie' => [env('CACHE_TIME_MOVIE')],
 
 ];

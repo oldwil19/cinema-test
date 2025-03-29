@@ -12,7 +12,7 @@ class AuditoriumFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->company . ' Auditorium',
+            'name' => $this->faker->company.' Auditorium',
             'seats' => json_encode($this->generateSeats()),
             'status' => 'active',
             'opening_time' => '00:00:00',
